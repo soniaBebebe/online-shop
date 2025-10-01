@@ -1,0 +1,57 @@
+{%extends 'shop/base.html'%}
+
+{%block title%}Products{%endblock%}
+
+{%block content%}
+
+<div class="shell">
+    <aside class="panel">
+        <h3 class="cat-title">Categories</h3>
+        <ul class="cat-list">
+            <li><a href="{%url 'shop:home'%}">All products</a></li>
+            {%for c in categories%}
+            <li><a href="{{c.get_absolute_url}}">{{c.name}}</a></li>
+            {%endfor%}
+
+        </ul>
+    </aside>
+    <section class="panel">
+        <h2 style="margin:0 0 12px 0">
+            Products{%if category%} in {{category.name}}{%endif%}
+        </h2>
+        <div class="grid">
+            {%for p in products%}
+
+            <article class="card">
+                <div class="card__img"></div>
+                <div class="card__body">
+                    <h3 class="Card__name">
+                        <a href="{{p.get_absolute_url}}" style="text-decoration: none; color: inherit;">{{p.name}}</a>
+                    </h3>
+
+                    <div class="card__meta">
+                        <span class="muted">{{p.category.name}}</span>
+                        <span class="card__price">{{p.price}}$</span>
+                    </div>
+
+                    <div class="card__actions">
+                        <form action="{%url 'shop:cart_add' p.id%}" method="post">
+                            {%csrf_token%}
+                            <input type="number" name="quantity" value="1" min="1" max="999">
+                            <button class="btn btn--primary" type="submit">Add to cart</button>
+                        </form>
+                        <a class="btn" href="{{p.get_absolute_url}}">Details</a>
+                    </div>
+                </div>
+            </article> 
+            {%empty%}
+            <p class="muted">No products found.</p>
+            {%endfor%}
+        </div>
+    </section>
+
+                
+
+        
+</div>
+{%endblock%}

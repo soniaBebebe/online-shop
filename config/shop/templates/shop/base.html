@@ -1,0 +1,28 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{%static 'css/style.css'%}">
+</head>
+<body>
+    
+    <header class="header">
+        <div class="header__inner">
+            <div class="logo"><a href="{%url 'shop:home'%}">My Online Shop</a></div>
+            <nav class="nav">
+                <a class="btn" href="{% url 'shop:home'%}">Catalog</a>
+                <a class="btn btn--primary" href="{%url 'shop:cart_detail'%}">Cart</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        {%block content%}
+        {%endblock%}
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+{%extends 'shop/base.html'%}
+{%block title%}Cart{%endblock%}
+{%block content%}
+
+<section class="panel">
+    <h2 style="margin-top:0">Your Cart</h2>
+    {%if cart|length%}
+    <ul class="cart-items">
+        {%for item in cart%}
+        <li class="cart-item">
+            <div>
+                <div><strong>{{item.product.name}}</strong></div>
+                <div class="muted">{{item.product.category.name}}</div>
+            </div>
+            <form action="{%url 'shop:cart_update' item.product.id%}" method="post">
+                {%csrf_token%}
+                <input type="number" name="quantity" value="1" min="1" max="999">
+                <button class="btn" type="submit">Update</button>
+                <button class="btn btn--danger" name="quantity" value="0" type="submit">Remove</button>
+            </form>
+            <div><strong>{{item.total_price}}$</strong></div>
+        </li>
+        {%endfor%}
+    </ul>
+    <div class="total">Total:{{cart.get_total_price}}$</div>
+    <div style="display:flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+        <a class="btn" href="{%url 'shop:home'%}">Continue shopping</a>
+        <a class="btn btn--primary" href="#">Proceed to checkout</a>
+    </div>
+    {%else%}
+        <p class="muted">Cart is empty...</p>
+        <a class="btn btn--primary" href="{%url 'shop:home'%}">Go to catalog</a>
+    {%endif%}
+</section>
+{%endblock%}

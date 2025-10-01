@@ -1,0 +1,63 @@
+:root{
+    --bg:#0f1115;
+    --panel:#151922;
+    --muted:#99a3b3;
+    --text:#e8eefc;
+    --brand:#6aa6ff;
+    --brand-2:#7ee787;
+    --danger:#ff6b6b;
+    --border:#232a39;
+    --radius:14px;
+    --shadow: 0 6px 24px rgba(0,0,0,.25);
+}
+
+*{
+    box-sizing: border-box;
+}
+
+html, body{
+    height: 100%;
+}
+
+body{
+    margin: 0;
+    font: 16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu;
+    color: var(--text);
+    background: linear-gradient(180deg, #0c0f14, #0b0d12 40%, #0f1115 100%);
+}
+
+.container{
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.header{
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: rgba(11,13,18,.75);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+}
+
+.header__inner{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 24px;
+}
+
+.logo{
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+.logo a{
+    color: var(--text);
+    text-decoration: none;
+}
+.nav{
+    margin-left: auto;
+    display: flex;
+    gap: 12px;
+}
