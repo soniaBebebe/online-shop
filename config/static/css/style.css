@@ -61,3 +61,8 @@ body{
     display: flex;
     gap: 12px;
 }
+.btn{
+    font-size: 20px;
+    color: var(--text);
+    text-decoration: none;
+}

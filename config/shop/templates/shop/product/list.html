@@ -8,9 +8,9 @@
     <aside class="panel">
         <h3 class="cat-title">Categories</h3>
         <ul class="cat-list">
-            <li><a href="{%url 'shop:home'%}">All products</a></li>
+            <li><a class="categorylol" href="{%url 'shop:home'%}">All products</a></li>
             {%for c in categories%}
-            <li><a href="{{c.get_absolute_url}}">{{c.name}}</a></li>
+            <li><a class="categorylol" href="{{c.get_absolute_url}}">{{c.name}}</a></li>
             {%endfor%}
 
         </ul>

@@ -32,8 +32,7 @@ def cart_detail(request):
 def cart_add(request, product_id):
     cart=Cart(request)
     product=get_object_or_404(Product, id=product_id, is_active=True)
-    qty=int(request.POST.get('quantity',1))
-    qty=max(1, min(qty,999))
+    qty = max(1, int(request.POST.get('quantity', 1)))
     cart.add(product, quantity=qty)
     return redirect('shop:cart_detail')
 
