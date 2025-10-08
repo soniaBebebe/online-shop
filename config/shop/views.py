@@ -42,5 +42,5 @@ def cart_update(request, product_id):
     cart=Cart(request)
     product=get_object_or_404(Product, id=product_id, is_active=True)
     qty=max(0, int(request.POST.get('quantity',1)))
-    cart.set(product,qty) #0-deletes
+    cart.add(product,quantity=qty, update_quantity=True) #0-deletes
     return redirect('shop:cart_detail')

@@ -42,7 +42,9 @@ class Cart:
         return sum(item["quantity"] for item in self.cart.values())
     
     def __iter__(self):
-        product_ids=self.cart.keys()
+        product_ids=[int(pid) for pid in self.cart.keys()]
+        if not product_ids:
+            return
         products=Product.objects.filter(id__in=product_ids)
         cart=self.cart.copy()
 
@@ -55,3 +57,10 @@ class Cart:
     
     def get_total_price(self)->Decimal:
         return sum(Decimal(i["price"])*i["quantity"] for i in self.cart.values())
+    
+    def set(self, product: Product, quantity: int):
+        pid = str(product.id)
+        self.cart[pid]={"quantity": max(0, int(quantity)), "price": str(product.price)}
+        if self.cart[pid]["quantity"]<=0:
+            del self.cart[pid]
+        self.save()

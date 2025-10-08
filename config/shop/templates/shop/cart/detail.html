@@ -14,7 +14,7 @@
             </div>
             <form action="{%url 'shop:cart_update' item.product.id%}" method="post">
                 {%csrf_token%}
-                <input type="number" name="quantity" value="1" min="1" max="999">
+                <input type="number" name="quantity" value="{{item.quantity}}" min="1" max="999">
                 <button class="btn" type="submit">Update</button>
                 <button class="btn btn--danger" name="quantity" value="0" type="submit">Remove</button>
             </form>
