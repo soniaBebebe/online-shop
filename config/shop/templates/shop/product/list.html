@@ -26,18 +26,18 @@
                 <div class="card__img"></div>
                 <div class="card__body">
                     <h3 class="Card__name">
-                        <a href="{{p.get_absolute_url}}" style="text-decoration: none; color: inherit;">{{p.name}}</a>
+                        <a href="{{p.get_absolute_url}}" class="productname" style="text-decoration: none;">{{p.name}}</a>
                     </h3>
 
                     <div class="card__meta">
-                        <span class="muted">{{p.category.name}}</span>
+                        <span class="muted">{{p.category.name}} | </span>
                         <span class="card__price">{{p.price}}$</span>
                     </div>
 
                     <div class="card__actions">
                         <form action="{%url 'shop:cart_add' p.id%}" method="post">
                             {%csrf_token%}
-                            <input type="number" name="quantity" value="1" min="1" max="999">
+                            <input class="inputqty" type="number" name="quantity" value="1" min="1" max="999">
                             <button class="btn btn--primary" type="submit">Add to cart</button>
                         </form>
                         <a class="btn" href="{{p.get_absolute_url}}">Details</a>

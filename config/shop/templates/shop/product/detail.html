@@ -1,13 +1,13 @@
 {%extends 'shop/base.html'%}
 {%block title%}{{product.name}}{%endblock%}
 {%block content%}
-<h2>{{product.name}}</h2>
+<h2 class="productname">{{product.name}}</h2>
 <p>Category: {{product.category.name}}</p>
 <p>Price: ${{product.price}}</p>
 <p>Stock: {{product.stock}}</p>
 <form action="{%url 'shop:cart_add' product.id%}" method="post">
     {%csrf_token%}
-    <input type="number" name="quantity" value="1" min="1" max="999">
+    <input class="inputqty" type="number" name="quantity" value="1" min="1" max="999">
     <button class="btn btn--primary" type="submit">Add to cart</button>
     <a class="btn" href="{%url 'shop:home'%}">Back</a>
 </form>

@@ -26,7 +26,7 @@ def product_detail(request, slug):
 
 def cart_detail(request):
     cart=Cart(request)
-    return render(request, 'shop/cart/detail.html')
+    return render(request, 'shop/cart/detail.html', {'cart': cart})
 
 @require_POST
 def cart_add(request, product_id):
