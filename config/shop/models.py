@@ -26,6 +26,8 @@ class Product(models.Model):
     stock=models.PositiveIntegerField(default=100)
     is_active=models.BooleanField(default=True)
     unit=models.CharField(max_length=20, default='pcs')
+    image=models.ImageField(upload_to='products/%Y/%m/', blank=True, null=True)
+    description=models.TextField(blank=True)
 
     class Meta:
         ordering=['name']

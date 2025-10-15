@@ -1,5 +1,5 @@
 {%extends 'shop/base.html'%}
-
+{%load static%}
 {%block title%}Products{%endblock%}
 
 {%block content%}
@@ -23,7 +23,13 @@
             {%for p in products%}
 
             <article class="card">
-                <div class="card__img"></div>
+                <div class="card__img">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img">
+                    {% else %}
+                        <img src="{% static 'img/placeholder.png' %}" alt="" class="product-img">
+                    {% endif %}
+                </div>
                 <div class="card__body">
                     <h3 class="Card__name">
                         <a href="{{p.get_absolute_url}}" class="productname" style="text-decoration: none;">{{p.name}}</a>
