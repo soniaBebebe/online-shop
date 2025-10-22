@@ -24,8 +24,8 @@
 
             <article class="card">
                 <div class="card__img">
-                    {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img">
+                    {% if p.image %}
+                        <img src="{{ p.image.url }}" alt="{{ p.name }}" class="product-img">
                     {% else %}
                         <img src="{% static 'img/placeholder.png' %}" alt="" class="product-img">
                     {% endif %}
