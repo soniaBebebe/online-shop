@@ -24,7 +24,7 @@ def delete_group(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies=[
-        ('shop', '0002_product_description'),
+        ('shop', '0002_product_description_product_image'),
         ('auth', '0012_alter_user_first_name_max_length'),
     ]
     operations=[
