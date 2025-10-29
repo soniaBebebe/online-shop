@@ -1,0 +1,33 @@
+{%extends 'shop/base.html'%}
+{%block title%}Manage products{%endblock%}
+{%block content%}
+<section class="panel">
+    <div style="display:flex; justify-content:space-between; align-items:center">
+        <h2 style="margin:0">Products</h2>
+        <a class="btn btn--primary" href="{%url 'shop:product_create'%}">+ New product</a>
+    </div>
+    <table style="width:100%; margin-top:12px; border-collapse:collapse">
+        <thead>
+            <tr>
+                <th align="left">Name</th> 
+                <th align="left">Category</th> 
+                <th align="right">Price</th>
+                <th align="center">Active</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for p in products%}
+            <tr style="border-top:1px solid var(--border)">
+                <td>{{p.name}}</td>
+                <td>{{p.category.name}}</td>
+                <td align="right">{{p.price}}</td>
+                <td align="center">{{p.is_active|yesno:"V, X"}}</td>
+                <td align="right"><a class="btn" href="{%url 'shop:product_edit' p.id%}">Edit</a></td>
+            </tr>
+            {%empty%}
+            <tr><td colspan="5" class="muted">No products yeat.</td></tr>
+            {%endfor%}
+        </tbody>
+    </table>
+</section>

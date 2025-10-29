@@ -2,7 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Category, Product
 from .cart import Cart
 from django.views.decorators.http import require_POST
-
+from django.contrib.auth.decorators import login_required, permission_required
+from .forms import ProductForm
+from django.contrib import messages
 
 # Create your views here.
 
@@ -43,3 +45,36 @@ def cart_update(request, product_id):
     qty=max(0, int(request.POST.get('quantity',1)))
     cart.add(product,quantity=qty, update_quantity=True) #0-deletes
     return redirect('shop:cart_detail')
+
+@login_required
+@permission_required('shop.change_product', raise_exception=True)
+def manage_products(request):
+    products=Product.objects.all().order_by('-id')
+    return render(request, 'shop/manage/products_list.html', {'products': products})
+
+@login_required
+@permission_required('shop.add_product', raise_exception=True)
+def product_create(request):
+    if request.method=='POST':
+        form=ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product=form.save()
+            messages.success(request, f'Product "{product.name}" created')
+            return redirect('shop:manage_products')
+    else:
+        form=ProductForm()
+    return render(request, 'shop/manage/product_form.html', {'form':form, 'mode':'create'})
+
+@login_required
+@permission_required('shop.change_product', raise_exception=True)
+def product_edit(request, pk):
+    product=get_object_or_404(Product, pk=pk)
+    if request.method=='POST':
+        form=ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Product "{product.name}" updated')
+            return redirect('shop:manage_products')
+    else:
+        form=ProductForm(instance=product)
+    return render(request, 'shop/manage/product_form.html', {'form':form, 'mode':'edit', 'product':product})
