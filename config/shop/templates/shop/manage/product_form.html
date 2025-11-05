@@ -1,5 +1,6 @@
 {%extends 'shop/base.html'%}
-{%block title%}{%if mode=='create'%}New product {%else%}Edit product{%endif%}{%endblock%}
+{%load static%}
+{%block title%}{%if mode == 'create'%}New product {%else%}Edit product{%endif%}{%endblock%}
 {%block content%}
 <section class="panel">
     <h2 style="margin-top:0">{% if mode == 'create' %}New product{% else %}Edit: {{ product.name }}{% endif %}</h2>
@@ -12,8 +13,9 @@
     {%endfor%}
 
     <div style="display:flex; gap:10px;">
-        <a class="btn" href="{%erl 'shop:manage_products'%}">Cancel</a>
+        <a class="btn" href="{%url 'shop:manage_products'%}">Cancel</a>
         <button class="btn btn--primary" type="submit">Save</button>
     </div>
     
 </section>
+{%endblock%}
