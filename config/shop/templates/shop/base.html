@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="{%static 'css/style.css'%}">
 </head>
 <body>
-    
+    {% if request.user.is_authenticated and perms.shop.change_product %}
+    <a class="btn" href="{% url 'shop:manage_products' %}">Manage</a>
+    {% endif %}
     <header class="header">
         <div class="header__inner">
             <div class="logo"><a href="{%url 'shop:home'%}">My Online Shop</a></div>
