@@ -1,9 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Category, Product
+from .models import Category, Product, Order, OrderItem
 from .cart import Cart
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required, permission_required
-from .forms import ProductForm
+from .forms import ProductForm, OrderCreateForm
 from django.contrib import messages
 
 # Create your views here.
@@ -78,3 +78,35 @@ def product_edit(request, pk):
     else:
         form=ProductForm(instance=product)
     return render(request, 'shop/manage/product_form.html', {'form':form, 'mode':'edit', 'product':product})
+
+def checkout(request):
+    cart=Cart(request)
+    if len(cart)==0:
+        return redirect('shop:cart_detail')
+    if request.method=='POST':
+        form=OrderCreateForm(request.POST)
+        if form.is_valid():
+            order=form.save(commit=False)
+            order.paid=False
+            order.save()
+
+            for item in cart:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item['product'],
+                    price=item['price'],
+                    quantity=item['quantity']
+                )
+
+            total=order.get_total_cost()
+            cart.clear()
+            return render(request, 'shop/order/receipt.html',{
+                'order':order,
+                'total':total,
+            })
+    else:
+        form=OrderCreateForm
+        return render(request, 'shop/order/checkout.html',{
+            'cart':cart,
+            'form':form
+        })

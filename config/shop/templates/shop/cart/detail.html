@@ -25,7 +25,7 @@
     <div class="total">Total:{{cart.get_total_price}}$</div>
     <div style="display:flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
         <a class="btn" href="{%url 'shop:home'%}">Continue shopping</a>
-        <a class="btn btn--primary" href="#">Proceed to checkout</a>
+        <a class="btn btn--primary" href="{%url 'shop:checkout'%}">Proceed to checkout</a>
     </div>
     {%else%}
         <p class="muted">Cart is empty...</p>

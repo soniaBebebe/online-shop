@@ -1,0 +1,44 @@
+{%extends 'shop/base.html'%}
+{%block title%}Checkout{%endblock%}
+
+{%block content%}
+<section class="panel">
+    <h2 style="margin-top:0">Checkout</h2>
+    <div class="grid" style="grid-template-columns:1fr 1fr; gap:20px">
+        <div>
+            <h3>Your Items</h3>
+            <ul class="cart-items">
+                {%for item in cart%}
+                <li class="cart-item">
+                    <div>
+                        <strong>{{item.product.name}}</strong>
+                        <br>
+                        <span class="muted">x{{item.quantity}}</span>
+                    </div>
+                    <div>
+                        <strong>{{item.total_price}}$</strong>
+                    </div>
+                </li>
+                {%endfor%}
+            </ul>
+            <div class="total">Total: {{car.get_total_price}}$</div>
+        </div>
+        <div>
+            <h3>Customer Details</h3>
+            <form method="post" style="display:grid; gap:10px">
+                {%csrf_token%}
+                {%for field in form%}
+                <div>
+                    <label for="{{field.id_for_label}}">{{field.label}}</label>
+                    {{field}}
+                    {%if field.errors%}
+                    <div class="muted" style="color:#ff8a8a">{{field.errors|striptags}}</div>
+                    {%endif%}
+                </div>
+                <button class="btn btn--primary" type="submit">Confirm Order</button>
+                <a class="btn" href="{%url 'shop:cart_detail'%}">Back to Cart</a>
+            </form>
+        </div>
+    </div>
+</section>
+{%endblock%}

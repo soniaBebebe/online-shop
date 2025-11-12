@@ -16,6 +16,8 @@ urlpatterns=[
     path('manage/products/', views.manage_products, name='manage_products'),
     path('manage/products/create/', views.product_create, name='product_create'),
     path('manage/products/<int:pk>/edit/', views.product_edit, name='product_edit'),
+
+    path('checkout/', views.checkout, name='checkout'),
 ]
 
 if settings.DEBUG:
