@@ -48,8 +48,8 @@ class Order(models.Model):
     email=models.EmailField()
     address=models.CharField(max_length=50)
     city=models.CharField(max_length=100, blank=True)
-    created=models.DateTimeField(deafult=timezone.now, db_index=True)
-    paid=models.BooleanField(deafult=False)
+    created=models.DateTimeField(default=timezone.now, db_index=True)
+    paid=models.BooleanField(default=False)
     payment_id=models.CharField(max_length=100, blank=True)
 
     class Meta:
@@ -63,7 +63,7 @@ class OrderItem(models.Model):
     order=models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     product=models.ForeignKey(Product, related_name='order_items', on_delete=models.PROTECT)
     price=models.DecimalField(max_digits=10, decimal_places=2)
-    quantity=models.PositiveIntegerField(deafult=1)
+    quantity=models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return f"{self.product.name} x {self.quantity}"
