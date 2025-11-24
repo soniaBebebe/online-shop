@@ -48,7 +48,7 @@ class Order(models.Model):
     email=models.EmailField()
     address=models.CharField(max_length=50)
     city=models.CharField(max_length=100, blank=True)
-    created=models.DateTimeField(deaful=timezone.now, db_index=True)
+    created=models.DateTimeField(deafult=timezone.now, db_index=True)
     paid=models.BooleanField(deafult=False)
     payment_id=models.CharField(max_length=100, blank=True)
 
