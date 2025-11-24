@@ -35,6 +35,7 @@
                     <div class="muted" style="color:#ff8a8a">{{field.errors|striptags}}</div>
                     {%endif%}
                 </div>
+                {%endfor%}
                 <button class="btn btn--primary" type="submit">Confirm Order</button>
                 <a class="btn" href="{%url 'shop:cart_detail'%}">Back to Cart</a>
             </form>

@@ -5,4 +5,41 @@
 <section class="panel">
     <h2 style="margin-top:0">Receipt -- Order #{{order.id}}</h2>
     <p class="muted">Created: {{order.created|date:"Y-m-d H:i"}}</p>
+
+    <h3>Customer</h3>
+    <p>
+        {{order.first_name}} {{order.last_name}} <br>
+        {{order.email}} <br>
+        {{order.address}} {%if order.city%}, {{order.city}} {%endif%}
+    </p>
+    <h3>Items</h3>
+    <table style="width:100; border-collapse:collapse">
+        <thread>
+            <tr>    
+                <th align="left">Product</th>
+                <th align="right">Qty</th>
+                <th align="right">Price</th>
+                <th align="right">Total</th>
+            </tr>
+        </thread>
+        <tbody>
+            {%for it in order.items.all%}
+            <tr style="border-top:1px solid var(--border)">
+                <td>{{it.product.name}}</td>
+                <td align="right">{{it.quantity}}</td>
+                <td align="right">{{it.price}}</td>
+                <td align="right">{{it.get_cost}}</td>
+            </tr>
+            {%endfor%}
+            <tr style="border-top:2px solid var(--border); font-weight:600">
+                <td colspan="3" align="right">Total:</td>
+                <td align="right">{{order.get_total_cost}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div style="margin-top:16px; display:flex; gap:10px; justify-content:flex-end">
+        <a class="btn" href="{%url 'shop:home%}">Continue Shopping</a>
+    </div>
 </section>
+{%endblock%}
