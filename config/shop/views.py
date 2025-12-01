@@ -5,6 +5,7 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required, permission_required
 from .forms import ProductForm, OrderCreateForm
 from django.contrib import messages
+from .email import send_order_confirmation, send_order_receipt, notify_admin
 
 # Create your views here.
 
@@ -90,6 +91,7 @@ def checkout(request):
             order.paid=False
             order.save()
 
+
             for item in cart:
                 OrderItem.objects.create(
                     order=order,
@@ -99,6 +101,9 @@ def checkout(request):
                 )
 
             total=order.get_total_cost()
+            send_order_confirmation(order)
+            send_order_receipt(order)
+            notify_admin(order)
             cart.clear()
             return render(request, 'shop/order/receipt.html',{
                 'order':order,
@@ -106,7 +111,7 @@ def checkout(request):
             })
     else:
         form=OrderCreateForm
-        return render(request, 'shop/order/checkout.html',{
-            'cart':cart,
-            'form':form
-        })
+    return render(request, 'shop/order/checkout.html',{
+        'cart':cart,
+        'form':form
+    })

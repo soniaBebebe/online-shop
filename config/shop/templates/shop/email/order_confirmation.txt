@@ -1,0 +1,10 @@
+thank you for your order!
+
+order number: #{{order.id}}
+date: {{order.created|date:"Y-m-d H:i"}}
+
+we started preparing your order.
+receipt will be in other email
+
+sincerely, 
+My Online Shop admin team
