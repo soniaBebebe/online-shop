@@ -5,7 +5,9 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required, permission_required
 from .forms import ProductForm, OrderCreateForm
 from django.contrib import messages
-from .email import send_order_confirmation, send_order_receipt, notify_admin
+from .email import send_order_confirmation, send_order_receipt, notify_admin, send_order_pdf
+from .pdf import generate_order_pdf
+from django.http import FileResponse
 
 # Create your views here.
 
@@ -104,6 +106,7 @@ def checkout(request):
             send_order_confirmation(order)
             send_order_receipt(order)
             notify_admin(order)
+            send_order_pdf(order)
             cart.clear()
             return render(request, 'shop/order/receipt.html',{
                 'order':order,
@@ -115,3 +118,8 @@ def checkout(request):
         'cart':cart,
         'form':form
     })
+
+def order_pdf(request, order_id):
+    order=Order.objects.get(id=order_id)
+    pdf_buffer=generate_order_pdf(order)
+    return FileResponse(pdf_buffer, as_attachment=True, filename=f"receipt_{order.id}.pdf")

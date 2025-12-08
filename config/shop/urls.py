@@ -18,6 +18,8 @@ urlpatterns=[
     path('manage/products/<int:pk>/edit/', views.product_edit, name='product_edit'),
 
     path('checkout/', views.checkout, name='checkout'),
+
+    path('order/<int:order_id>/pdf/', views.order_pdf, name='order_pdf'),
 ]
 
 if settings.DEBUG:
