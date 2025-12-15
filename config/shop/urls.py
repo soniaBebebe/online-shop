@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 
 app_name='shop'
 urlpatterns=[
@@ -20,6 +21,11 @@ urlpatterns=[
     path('checkout/', views.checkout, name='checkout'),
 
     path('order/<int:order_id>/pdf/', views.order_pdf, name='order_pdf'),
+    path("my/orders/", views.my_orders, name="my_orders"),
+
+    path("login/", auth_views.LoginView.as_view(template_name="shop/auth/loogin.html"), name="login"),
+    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path("signup/", views.signup, name="signup"),
 ]
 
 if settings.DEBUG:

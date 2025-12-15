@@ -1,0 +1,16 @@
+{%extends "shop/base.html"%}
+{%block title%}Login{%endblock%}
+
+{%block content%}
+<section class="panel" style="max-width:400px; margin:autho">
+    <h2>Login</h2>
+    <form method="post">
+        {%csrf_token%}
+        {{form.as_p}}
+        <button class="btn btn--primary" type="submit">Login</button>
+    </form>
+    <p class="muted">
+        No account? <a href="{% url'shop:signup'%}">Sign up</a>
+    </p>
+</section>
+{%endblock%}

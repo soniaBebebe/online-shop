@@ -1,0 +1,35 @@
+{%extends "shop/base.html"%}
+
+{%block title%}My Orders{%endblock%}
+
+{%block content%}
+<section class="panel">
+    <h2 style="margin-top:0">My Orders</h2>
+    {%if orders%}
+    <table style="width:100%; border-collapse:collapse; margin-top:12px">
+        <thead>
+            <tr>
+                <th align="left">Order #</th>
+                <th align="left">Date</th>
+                <th align="left">Status</th>
+                <th align="left">Total</th>
+                <th align="left">Receipt</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for o in orders%}
+            <tr style="border-top:1px solid #eee">
+                <td>#{{o.id}}</td>
+                <td>{{o.created|date:"Y-m-d H:i"}}</td>
+                <td>{{o.status}}</td>
+                <td>{{o.get_total_cost}}$</td>
+                <td><a class="btn" href="{%url 'shop:order_pdf' o.id%}">PDF</a></td>
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table>
+    {%else%}
+    <p class="muted">You have no orders yet.</p>
+    {%endif%}
+</section>
+{%endblock%}

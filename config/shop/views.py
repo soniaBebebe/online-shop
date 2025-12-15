@@ -8,6 +8,8 @@ from django.contrib import messages
 from .email import send_order_confirmation, send_order_receipt, notify_admin, send_order_pdf
 from .pdf import generate_order_pdf
 from django.http import FileResponse
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 
 # Create your views here.
 
@@ -90,6 +92,8 @@ def checkout(request):
         form=OrderCreateForm(request.POST)
         if form.is_valid():
             order=form.save(commit=False)
+            if request.user.is_authenticated:
+                order.user=request.user
             order.paid=False
             order.save()
 
@@ -123,3 +127,19 @@ def order_pdf(request, order_id):
     order=Order.objects.get(id=order_id)
     pdf_buffer=generate_order_pdf(order)
     return FileResponse(pdf_buffer, as_attachment=True, filename=f"receipt_{order.id}.pdf")
+
+@login_required
+def my_orders(request):
+    orders=Order.objects.filter(user=request.user).order_by("-created")
+    return render(request, "shop/order/my_orders.html", {"orders": orders})
+
+def signup(request):
+    if request.method=="POST":
+        form=UserCreationForm(request.POST)
+        if form.is_valid():
+            user=form.save()
+            login(request, user)
+            return redirect("shop:home")
+    else:
+        form=UserCreationForm()
+    return render(request, "shop/auth/signup.html", {"form": form})
