@@ -10,7 +10,22 @@
         <button class="btn btn--primary" type="submit">Login</button>
     </form>
     <p class="muted">
-        No account? <a href="{% url'shop:signup'%}">Sign up</a>
+        No account? <a href="{% url 'shop:signup'%}">Sign up</a>
     </p>
 </section>
+<style>
+    form p input{
+        background-color: rgb(13, 21, 74);
+        border:none
+    }
+    a{
+        color: rgb(0, 255, 115);
+        font: bold;
+        text-decoration: none;
+    }
+    h2{
+        font-size: 30px;
+        margin-bottom: 30px;
+    }
+</style>
 {%endblock%}

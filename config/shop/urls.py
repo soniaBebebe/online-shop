@@ -23,9 +23,18 @@ urlpatterns=[
     path('order/<int:order_id>/pdf/', views.order_pdf, name='order_pdf'),
     path("my/orders/", views.my_orders, name="my_orders"),
 
-    path("login/", auth_views.LoginView.as_view(template_name="shop/auth/loogin.html"), name="login"),
+    path("login/", auth_views.LoginView.as_view(template_name="shop/auth/login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("signup/", views.signup, name="signup"),
+
+    path('manage/', views.manage_dashboard, name='manage_dashboard'),
+    path('manage/products/', views.manage_products, name='manage_products'),
+    path('manage/products/create/', views.product_create, name='product_create'),
+    path('manage/products/<int:pk>/edit/', views.product_edit, name='product_edit'),
+
+    path('manage/orders', views.manage_orders, name='manage_orders'),
+    path('manage/orders/<int:order_id>/', views.manage_order_detail, name='manage_order_detail'),
+    path('manage/orders/<int:order_id>/status/', views.manage_order_status, name='manage_order_status'),
 ]
 
 if settings.DEBUG:

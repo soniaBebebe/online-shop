@@ -10,6 +10,9 @@ from .pdf import generate_order_pdf
 from django.http import FileResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.db.models import Sum, Count
+from django.utils import timezone
+from datetime import timedelta
 
 # Create your views here.
 
@@ -143,3 +146,13 @@ def signup(request):
     else:
         form=UserCreationForm()
     return render(request, "shop/auth/signup.html", {"form": form})
+
+@login_required
+@permission_required('shop.view_order', raise_exception=True)
+def manage_dashboard(request):
+    from .models import Order
+    today=timezone.now().date()
+    week_ago=today-timedelta(days=7)
+    total_orders=Order.objects.count()
+    paid_orders=Order.objects.filter(paid=True).count()
+    week_orders=Order.objects.filter(created__date__gte=week_ago).count()

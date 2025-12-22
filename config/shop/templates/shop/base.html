@@ -23,7 +23,17 @@
             </nav>
         </div>
     </header>
-
+    {%if request.user.is_authenticated%}
+    <span class="muted">Hi, {{request.user.username}}</span>
+    <a href="{%url 'shop:my_orders'%}" class="btn">My orders</a>
+    <form action="{%url 'shop:logout'%}"method="post" style="display:inline">
+        {%csrf_token%}
+        <button class="btn" type="submit">Logout</button>
+    </form>
+    {%else%}
+    <a href="{%url 'shop:login'%}" class="btn">Login</a>
+    <a href="{%url 'shop:signup'%}" class="btn btn--primary">Sign up</a>
+    {%endif%}
     <div class="container">
         {%block content%}
         {%endblock%}
