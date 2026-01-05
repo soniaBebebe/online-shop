@@ -156,3 +156,54 @@ def manage_dashboard(request):
     total_orders=Order.objects.count()
     paid_orders=Order.objects.filter(paid=True).count()
     week_orders=Order.objects.filter(created__date__gte=week_ago).count()
+
+    revenue=Order.objects.filter (paid=True).aggregate(s=Sum('total'))['s'] or 0
+    recent_orders=Order.objects.order_by('-created')[:10]
+
+    return render(request, 'shop/manage/dasboard.html',{
+        'total_orders':total_orders,
+        'paid_orders':paid_orders,
+        'week_orders':week_orders,
+        'revenue': revenue,
+        'recent_orders': recent_orders,
+    })
+
+@login_required
+@permission_required('shop.view_order', raise_exception=True)
+def manage_orders(request):
+    from .models import Order
+    status=request.GET.get('status')
+    qs=Order.objects.order_by('-created')
+    if status:
+        qs=qs.filter(status=status)
+    return render(request, 'shop/manage/orders_list.html',{
+        'orders':qs,
+        'status':status,
+    })
+
+@login_required
+@permission_required('shop.view_order', raise_exception=True)
+def manage_order_detail(request, order_id):
+    from .models import Order
+    order=get_object_or_404(Order, id=order_id)
+    items=order.items.select_related('product')
+    return render(request, 'shop/manage/order_detail.html',{
+        'order':order,
+        'items':items,
+    })
+
+@login_required
+@permission_required('shop.change_order', raise_exception=True)
+@require_POST
+def manage_order_status(request, order_id):
+    from .models import Order
+    order=get_object_or_404(Order, id=order_id)
+
+    new_status=request.POST.get('status')
+    allowed={c[0] for c in Order.STATUS_CHOICES}
+    if new_status in allowed:
+        order.status=new_status
+        order.save(update_fields=['status'])
+        messages.success(request, f'Order #{order.id} status updated')
+    
+    return redirect('shop:manage_order_detail', order_id=order.id)

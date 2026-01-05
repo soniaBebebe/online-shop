@@ -1,0 +1,39 @@
+{%extends 'shop/base.html'%}
+{%block title%}Dashboard{%endblock%}
+
+{%block content%}
+<section class="panel">
+    <h2>Store dashboard</h2>
+    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-top:12px;">
+        <div class="panel"><div class="muted">Total orders</div><div style="font-size:24px;">{{total_orders}}</div></div>
+        <div class="panel"><div class="muted">Paid orders</div><div style="font-size:24px;">{{paid_orders}}</div></div>
+        <div class="panel"><div class="muted">Orders (7d)</div><div style="font-size:24px;">{{week_orders}}</div></div>
+        <div class="panel"><div class="muted">Revenue</div><div style="font-size:24px;">{{revenue}}$</div></div>
+    </div>
+    <div style="display:flex; gap:10px; margin-top:14px;">
+        <a class="btn btn--primary" href="{%url 'shop:manage_products'%}">Products</a>
+        <a class="btn" href="{% url 'shop:manage_orders'%}">Orders</a>
+    </div>
+    <h3 style="margin-top:18px;">Recent orders</h3>
+    <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+        <tr>
+            <th align="left">#</th>
+            <th align="left">Customer</th>
+            <th align="left">Total</th>
+            <th align="left">Status</th>
+            <th align="left"></th>
+        </tr>
+        {%for o in recent_orders%}
+        <tr>
+            <td>{{o.id}}</td>
+            <td>{{o.first_name}} {{o.last_name}}</td>
+            <td>{{o.total}}</td>
+            <td>{{o.status}}</td>
+            <td><a class="btn" href="{%url 'shop:manage_order_detail' o.id%}">Open</a></td>
+        </tr>
+        {%empty%}
+        <tr><td colspan="5" class="muted">No orders yet</td></tr>
+        {%endfor%}
+    </table>
+</section>
+{%endblock%}
