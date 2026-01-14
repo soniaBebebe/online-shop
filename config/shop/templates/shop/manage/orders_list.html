@@ -7,6 +7,33 @@
         <h2 style="margin:0;">Orders</h2>
         <a class="btn" href="{%url 'shop:manage_dashboard'%}">Dashboard</a>
     </div>
+
+    <form method="get" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+        <input type="text" class="inputqty" name="q" value="{{q}}" placeholder="Search (id, name, email)">
+        <select name="status">
+            <option value="">All statuses</option>
+            {%for key,label in status_choices%}
+            <option value="{{key}}" {% if status=key %}selected{%endif%}>{{label}}</option>
+            {%endfor%}
+        </select>
+        <select name="paid">
+            <option value="">Paid: all</option>
+            <option value="yes" {%if paid='yes'%}selected{%endif%}>Paid</option>
+            <option value="no" {%if paid='no'%}selected{%enif%}>Not paid</option>
+        </select>
+        <button class="btn btn--primary" type="submit">Apply</button>
+        <a href="{%url 'shop:manage_orders'%}" class="btn">Reset</a>
+    </form>
+
+    <form action="{%url 'shop:manage_orders_bulk_status'%}" method="post" style="margin-top:12px">
+        {%csrf_token%}
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
+            <button class="btn" type="button" onclick="toggleAll(true)">Select all</button>
+            <button class="btn" type="button" onclick="toggleAll(false)">Clear</button>
+            <!--nachat otsuda na sleduyushem zanyatii-->
+        </div>
+    </form>
+
     <table style="width:100%; border-collapse:collapse; margin-top:12px;">
         <tr>
             <th align="left">#</th>

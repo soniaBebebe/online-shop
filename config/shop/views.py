@@ -13,6 +13,8 @@ from django.contrib.auth import login
 from django.db.models import Sum, Count
 from django.utils import timezone
 from datetime import timedelta
+from django.db.models import Q
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -174,11 +176,31 @@ def manage_orders(request):
     from .models import Order
     status=request.GET.get('status')
     qs=Order.objects.order_by('-created')
+    q=(request.GET.get('q') or'').strip()
+    paid=(request.GET.get('paid')or'').strip()
+    if q:
+        qs=qs.filter(
+            Q(first_name__icontains=q)|
+            Q(last_name__icontains=q)|
+            Q(email__icontains=q)|
+            Q(id__icontains=q)
+        )
     if status:
         qs=qs.filter(status=status)
+    if paid=='yes':
+        qs=qs.filter(paid=True)
+    elif paid=='no':
+        qs=qs.filter(paid=False)
+    paginator=Paginator(qs,20)
+    page_number=request.GET.get('page')
+    page_obj=paginator.get_page(page_number)
     return render(request, 'shop/manage/orders_list.html',{
         'orders':qs,
         'status':status,
+        'page_obj':page_obj,
+        'q':q,
+        'paid':paid,
+        'status_choices':Order.STATUS_CHOICES,
     })
 
 @login_required
@@ -207,3 +229,21 @@ def manage_order_status(request, order_id):
         messages.success(request, f'Order #{order.id} status updated')
     
     return redirect('shop:manage_order_detail', order_id=order.id)
+
+@login_required
+@permission_required('shop.change_order', raise_exception=True)
+@require_POST
+def manage_orders_bulk_status(request):
+    from .models import Order
+    ids=request.POST.getlist('order_ids')
+    new_status=(request.POST.get('status')or '').strip()
+    allowed={c[0] for c in Order.STATUS_CHOICES}
+    if not ids:
+        messages.warning(request, "select at least one order")
+        return redirect('shop:manage_orders')
+    if new_status not in allowed:
+        messages.error(request, "invalid status")
+        return redirect('shop:manage_orders')
+    updated=Order.objects.filter(id__in=ids).update(status=new_status)
+    messages.success(request, f"Updated {updated} order(s)")
+    return redirect('shop:manage_orders')
