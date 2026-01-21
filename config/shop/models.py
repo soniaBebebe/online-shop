@@ -44,11 +44,32 @@ class Product(models.Model):
         return reverse('shop:product', args=[self.slug])
     
 class Order(models.Model):
+    STATUS_NEW='new'
+    STATUS_PROCESSING='processing'
+    STATUS_SHIPPED='shipped'
+    STATUS_COMPLETED='completed'
+    STATUS_CANCELLED='cancelled'
+
+    STATUS_CHOICES=[
+        (STATUS_NEW, 'New'),
+        (STATUS_PROCESSING, 'Processing'),
+        (STATUS_SHIPPED, 'Shipped'),
+        (STATUS_COMPLETED, 'Completed'),
+        (STATUS_CANCELLED, 'Cancelled'),
+    ]
+
     first_name=models.CharField(max_length=50)
     last_name=models.CharField(max_length=50, blank=True)
     email=models.EmailField()
     address=models.CharField(max_length=50)
     city=models.CharField(max_length=100, blank=True)
+
+    status=models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_NEW,
+        db_index=True
+    )
     created=models.DateTimeField(default=timezone.now, db_index=True)
     paid=models.BooleanField(default=False)
     payment_id=models.CharField(max_length=100, blank=True)

@@ -13,7 +13,7 @@
         <select name="status">
             <option value="">All statuses</option>
             {%for key,label in status_choices%}
-            <option value="{{key}}" {% if status=key %}selected{%endif%}>{{label}}</option>
+            <option value="{{key}}" {% if status|default:''==key %}selected{%endif%}>{{label}}</option>
             {%endfor%}
         </select>
         <select name="paid">
@@ -30,9 +30,16 @@
         <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
             <button class="btn" type="button" onclick="toggleAll(true)">Select all</button>
             <button class="btn" type="button" onclick="toggleAll(false)">Clear</button>
+            <select name="status" required>
+                <option value="" disabled selected>Set Status...</option>
+                {%for key,label in status_choices%}
+                <option value="{{key}}">{{label}}</option>
+                {%endfor%}
+            </select>
+            <button class="btn btn--primaary" type="submit">Update selected</button>
             <!--nachat otsuda na sleduyushem zanyatii-->
         </div>
-    </form>
+    
 
     <table style="width:100%; border-collapse:collapse; margin-top:12px;">
         <tr>
@@ -58,5 +65,22 @@
         <tr><td colspan="7" class="muted">No orders</td></tr>
         {%endfor%}
     </table>
+    </form>
+    {%if page_obj%}
+    <div style="display:flex; gap:10px; align-items:center; margin-top:14px;">
+        {%if page_obj.has_previous%}
+        <a class="btn"href="?q={{q}}&status={{status}}&paid={{paid}}&page={{page_obj.previous_page_number}}">Prev</a>
+        {%endif%}
+        <div class="muted">Page {{page_obj.number}}/{{page_obj.paginator.num_pages}}</div>
+        {%if page_obj.has_next%}
+        <a class="btn"href="?q={{q}}&status={{status}}&paid={{paid}}&page={{page_obj.next_page_number}}">Next</a>
+        {%endif%}
+    </div>
+    {%endif%}
 </section>
+<script>
+    function toggleAll(state){
+        document.querySelectorAll('.order-cb').forEach(cb=>cb.checked=state);
+    }
+</script>
 {%endblock%}
