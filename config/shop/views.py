@@ -194,14 +194,15 @@ def manage_orders(request):
     paginator=Paginator(qs,20)
     page_number=request.GET.get('page')
     page_obj=paginator.get_page(page_number)
-    return render(request, 'shop/manage/orders_list.html',{
-        'orders':qs,
+
+    context={
         'status':status,
         'page_obj':page_obj,
         'q':q,
         'paid':paid,
         'status_choices':Order.STATUS_CHOICES,
-    })
+    }
+    return render(request, 'shop/manage/orders_list.html', context)
 
 @login_required
 @permission_required('shop.view_order', raise_exception=True)
