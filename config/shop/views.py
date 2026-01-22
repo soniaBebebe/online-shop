@@ -176,8 +176,8 @@ def manage_orders(request):
     from .models import Order
     status=request.GET.get('status')
     qs=Order.objects.order_by('-created')
-    q=(request.GET.get('q') or'').strip()
-    paid=(request.GET.get('paid')or'').strip()
+    q=(request.GET.get('q') or '').strip()
+    paid=(request.GET.get('paid') or '').strip()
     if q:
         qs=qs.filter(
             Q(first_name__icontains=q)|
