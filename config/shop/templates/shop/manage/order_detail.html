@@ -1,0 +1,62 @@
+{%extends 'shop/base.html'%}
+{%block title%}Order #{{order.id}}{%endblock%}
+
+{%block content%}
+<section class="panel">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0;">Order #{{ order.id }}</h2>
+        <a href="{%url 'shop:manage_orders'%}" class="btn">Back to orders</a>
+    </div>
+    <div style="margin-top:12px;">
+        <p><strong>Customer:</strong> {{order.first_name}} {{order.last_name}}</p>
+        <p><strong>Email:</strong> {{order.email}}</p>
+        <p><strong>Address:</strong> {{order.address}} {{order.city}}</p>
+        <p><strong>Created:</strong> {{order.created}}</p>
+
+        <p>
+            <strong>Status:</strong>
+            <span class="badge">{{order.get_status_display}}</span>
+        </p>
+        <p>
+            <strong>Status:</strong>
+            {%if order.paid%} Yes {%else%} No {%endif%}
+        </p>
+    </div>
+    <h3 style="margin-top:20px;">Items</h3>
+    <table style="width:100%; border-collapse:collapse;">
+        <tr>
+            <th align="left">Product</th>
+            <th align="left">Price</th>
+            <th align="left">Qty</th>
+            <th align="left">Total</th>
+        </tr>
+        {%for item in items%}
+        <tr>
+            <td>{{item.product.name}}</td>
+            <td>{{item.price}}</td>
+            <td>{{item.quantity}}</td>
+            <td>{{item.get_cost}}</td>
+        </tr>
+        {%endfor%}
+    </table>
+    <h3 style="margin-top:16px;">Total: {{order.get_total_cost}}</h3>
+
+    <div style="display:flex; gap:10px; margin-top:16px;">
+        <a href="{% url 'shop:order_pdf' order.id}" class="btn">Download PDF</a>
+    </div>
+
+    {%if perms.shop.change_order%}
+    <form method="post" action="{%url 'shop:manage_order_status' order.id%}" style="margin-top:16px; display:flex; gap:10px;">
+        {%csrf_token%}
+        <select name="status">
+            {%for key,label in order.STATUS_CHOICES%}
+            <option value="{{key}}" {% if order.status == key %}selected{%endif%}>
+                {{label}}
+            </option>
+            {%endfor%}
+        </select>
+        <button class="btn btn--primary" type="submit">Update status</button>
+    </form>
+    {%endif%}
+</section>
+{%endblock%}
