@@ -41,10 +41,6 @@
     </table>
     <h3 style="margin-top:16px;">Total: {{order.get_total_cost}}</h3>
 
-    <div style="display:flex; gap:10px; margin-top:16px;">
-        <a href="{% url 'shop:order_pdf' order.id}" class="btn">Download PDF</a>
-    </div>
-
     {%if perms.shop.change_order%}
     <form method="post" action="{%url 'shop:manage_order_status' order.id%}" style="margin-top:16px; display:flex; gap:10px;">
         {%csrf_token%}

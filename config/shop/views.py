@@ -248,3 +248,19 @@ def manage_orders_bulk_status(request):
     updated=Order.objects.filter(id__in=ids).update(status=new_status)
     messages.success(request, f"Updated {updated} order(s)")
     return redirect('shop:manage_orders')
+
+@login_required
+@permission_required('shop.view_order', raise_exception=True)
+def manage_dashboard(request):
+    today=timezone.now().date()
+    week_ago = today-timedelta(days=6)
+
+    orders=(
+        Order.objects
+        .filter(created__date__gte=week_ago)
+        .extra({'day': "date(created)"})
+        .values('day')
+        .annotate(count=Count('id'))
+        .order_by('day')
+#nachat zdes
+    )
