@@ -15,6 +15,8 @@ from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q
 from django.core.paginator import Paginator
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 
 # Create your views here.
 
@@ -149,26 +151,26 @@ def signup(request):
         form=UserCreationForm()
     return render(request, "shop/auth/signup.html", {"form": form})
 
-@login_required
-@permission_required('shop.view_order', raise_exception=True)
-def manage_dashboard(request):
-    from .models import Order
-    today=timezone.now().date()
-    week_ago=today-timedelta(days=7)
-    total_orders=Order.objects.count()
-    paid_orders=Order.objects.filter(paid=True).count()
-    week_orders=Order.objects.filter(created__date__gte=week_ago).count()
+# @login_required
+# @permission_required('shop.view_order', raise_exception=True)
+# def manage_dashboard(request):
+#     from .models import Order
+#     today=timezone.now().date()
+#     week_ago=today-timedelta(days=7)
+#     total_orders=Order.objects.count()
+#     paid_orders=Order.objects.filter(paid=True).count()
+#     week_orders=Order.objects.filter(created__date__gte=week_ago).count()
 
-    revenue=Order.objects.filter (paid=True).aggregate(s=Sum('total'))['s'] or 0
-    recent_orders=Order.objects.order_by('-created')[:10]
+#     revenue=Order.objects.filter (paid=True).aggregate(s=Sum('total'))['s'] or 0
+#     recent_orders=Order.objects.order_by('-created')[:10]
 
-    return render(request, 'shop/manage/dasboard.html',{
-        'total_orders':total_orders,
-        'paid_orders':paid_orders,
-        'week_orders':week_orders,
-        'revenue': revenue,
-        'recent_orders': recent_orders,
-    })
+#     return render(request, 'shop/manage/dasboard.html',{
+#         'total_orders':total_orders,
+#         'paid_orders':paid_orders,
+#         'week_orders':week_orders,
+#         'revenue': revenue,
+#         'recent_orders': recent_orders,
+#     })
 
 @login_required
 @permission_required('shop.view_order', raise_exception=True)
@@ -277,8 +279,8 @@ def manage_dashboard(request):
         .annotate(count=Count('id'))
     )
     context={
-        'orders':list(orders),
-        'revenue':list(revenue),
-        'status_data':list(status_data),
+        'orders_json': json.dumps(list(orders), cls=DjangoJSONEncoder),
+        'revenue_json':json.dumps(list(revenue), cls=DjangoJSONEncoder),
+        'status_json':json.dumps(list(status_data)),
     }
     return render(request, 'shop/manage/dashboard.html', context)

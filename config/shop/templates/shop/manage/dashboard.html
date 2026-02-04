@@ -4,12 +4,12 @@
 {%block content%}
 <section class="panel">
     <h2>Store dashboard</h2>
-    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-top:12px;">
+    <!-- <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-top:12px;">
         <div class="panel"><div class="muted">Total orders</div><div style="font-size:24px;">{{total_orders}}</div></div>
         <div class="panel"><div class="muted">Paid orders</div><div style="font-size:24px;">{{paid_orders}}</div></div>
         <div class="panel"><div class="muted">Orders (7d)</div><div style="font-size:24px;">{{week_orders}}</div></div>
         <div class="panel"><div class="muted">Revenue</div><div style="font-size:24px;">{{revenue}}$</div></div>
-    </div>
+    </div> -->
     <div style="display:flex; gap:10px; margin-top:14px;">
         <a class="btn btn--primary" href="{%url 'shop:manage_products'%}">Products</a>
         <a class="btn" href="{% url 'shop:manage_orders'%}">Orders</a>
@@ -44,9 +44,9 @@
 </section>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const orders = {{ orders | safe }};
-    const revenue={{revenue | safe}};
-    const statusData={{status_data | safe}};
+    const orders = {{ orders_json|safe }};
+    const revenue={{revenue_json|safe}};
+    const statusData={{status_json|safe}};
     
     new Chart(document.getElementById('ordersChart'),{
         type: 'line',
@@ -56,6 +56,27 @@
                 label:'Orders',
                 data:orders.map(o=>o.count),
                 borderWidth:2
+            }]
+        }
+    });
+
+    new Chart(document.getElementById('revenueChart'),{
+        type: 'bar',
+        data: {
+            labels: revenue.map(r=>r.day),
+            datasets:[{
+                label:'Revenue',
+                data:orders.map(r=>r.total),
+            }]
+        }
+    });
+
+    new Chart(document.getElementById('statusChart'),{
+        type: 'pie',
+        data: {
+            labels: statusData.map(s=>s.status),
+            datasets:[{
+                data:statusData.map(s=>s.count),
             }]
         }
     });

@@ -37,6 +37,8 @@ urlpatterns=[
     path('manage/orders/<int:order_id>/status/', views.manage_order_status, name='manage_order_status'),
 
     path('manage/orders/bulk-status/', views.manage_orders_bulk_status, name="manage_orders_bulk_status"),
+
+    path('manage/dashboard/', views.manage_dashboard, name='manage_dashboard'),
 ]
 
 if settings.DEBUG:
