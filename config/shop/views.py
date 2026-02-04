@@ -262,5 +262,23 @@ def manage_dashboard(request):
         .values('day')
         .annotate(count=Count('id'))
         .order_by('day')
-#nachat zdes
     )
+    revenue=(
+        Order.objects
+        .filter(paid=True, created__date__gte=week_ago)
+        .extra({'day': "date(created)"})
+        .values('day')
+        .annotate(count=Sum('items__price'))
+        .order_by('day')
+    )
+    status_data=(
+        Order.objects
+        .values('status')
+        .annotate(count=Count('id'))
+    )
+    context={
+        'orders':list(orders),
+        'revenue':list(revenue),
+        'status_data':list(status_data),
+    }
+    return render(request, 'shop/manage/dashboard.html', context)
