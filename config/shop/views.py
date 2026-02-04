@@ -17,6 +17,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 import json
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models.functions import TruncDate
 
 # Create your views here.
 
@@ -260,10 +261,11 @@ def manage_dashboard(request):
     orders=(
         Order.objects
         .filter(created__date__gte=week_ago)
-        .extra({'day': "date(created)"})
+        .annotate(day=TruncDate("created"))
         .values('day')
         .annotate(count=Count('id'))
         .order_by('day')
+        #nachat zdes
     )
     revenue=(
         Order.objects
