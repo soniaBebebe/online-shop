@@ -42,11 +42,16 @@
     <canvas id="statusChart" height="120" style="margin-top:30px;"></canvas>
 
 </section>
+
+{{orders_json|json_script:"orders-data"}}
+{{revenue_json|json_script:"revenue-data"}}
+{{status_json|json_script:"status_data"}}
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const orders = {{ orders_json|safe }};
-    const revenue={{revenue_json|safe}};
-    const statusData={{status_json|safe}};
+    const orders = JSON.parse(document.getElementById('orders-data').textContent);
+    const revenue= JSON.parse(document.getElementById('revenue-data').textContent);
+    const statusData= JSON.parse(document.getElementById('status-data').textContent);
     
     new Chart(document.getElementById('ordersChart'),{
         type: 'line',

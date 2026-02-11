@@ -10,7 +10,7 @@ from .pdf import generate_order_pdf
 from django.http import FileResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, F, DecimalField
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q
@@ -270,19 +270,35 @@ def manage_dashboard(request):
     revenue=(
         Order.objects
         .filter(paid=True, created__date__gte=week_ago)
-        .extra({'day': "date(created)"})
+        .annotate(day=TruncDate("created"))
         .values('day')
-        .annotate(count=Sum('items__price'))
+        .annotate(
+            total=Sum(
+                F("items__price") * F("items__quantity"),
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            )
+        )
         .order_by('day')
     )
     status_data=(
         Order.objects
         .values('status')
         .annotate(count=Count('id'))
+        .order_by("status")
     )
+    total_orders=Order.objects.count()
+    paid_orders=Order.objects.filter(paid=True).count()
+    week_orders=Order.objects.filter(created__date__gte=week_ago).count()
+    revenue_total=revenue.aggregate(s=Sum("total"))["s"] or 0
+    recent_orders=Order.objects.order_by("-created")[:10]
     context={
         'orders_json': json.dumps(list(orders), cls=DjangoJSONEncoder),
         'revenue_json':json.dumps(list(revenue), cls=DjangoJSONEncoder),
         'status_json':json.dumps(list(status_data)),
+        "total_orders":total_orders,
+        "paid_orders":paid_orders,
+        "week_orders":week_orders,
+        "revenue_total":revenue_total,
+        "recent_orders":recent_orders,
     }
     return render(request, 'shop/manage/dashboard.html', context)
