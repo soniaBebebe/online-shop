@@ -43,9 +43,12 @@
 
 </section>
 
+<!-- {{orders_json|json_script:"orders-data"}}
+{{revenue_json|json_script:"revenue-data"}}
+{{status_json|json_script:"status-data"}} -->
 {{orders_json|json_script:"orders-data"}}
 {{revenue_json|json_script:"revenue-data"}}
-{{status_json|json_script:"status_data"}}
+{{status_json|json_script:"status-data"}}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -71,7 +74,7 @@
             labels: revenue.map(r=>r.day),
             datasets:[{
                 label:'Revenue',
-                data:orders.map(r=>r.total),
+                data:revenue.map(r=>r.total),
             }]
         }
     });

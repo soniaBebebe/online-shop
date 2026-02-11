@@ -292,13 +292,8 @@ def manage_dashboard(request):
     revenue_total=revenue.aggregate(s=Sum("total"))["s"] or 0
     recent_orders=Order.objects.order_by("-created")[:10]
     context={
-        'orders_json': json.dumps(list(orders), cls=DjangoJSONEncoder),
-        'revenue_json':json.dumps(list(revenue), cls=DjangoJSONEncoder),
-        'status_json':json.dumps(list(status_data)),
-        "total_orders":total_orders,
-        "paid_orders":paid_orders,
-        "week_orders":week_orders,
-        "revenue_total":revenue_total,
-        "recent_orders":recent_orders,
+        "orders_data":list(orders),
+        "revenue_data":list(revenue),
+        "status_data":list(status_data),
     }
     return render(request, 'shop/manage/dashboard.html', context)
