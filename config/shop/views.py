@@ -269,7 +269,7 @@ def manage_dashboard(request):
     )
     revenue=(
         Order.objects
-        .filter(paid=True) 
+        # .filter(paid=True) 
         #(created__date__gte=week_ago)
         .annotate(day=TruncDate("created"))
         .values('day')

@@ -78,12 +78,14 @@
     const revenueLabels=revenue.map(o=>
         new Date(r.day).toLocaleDateString()
     );
-    const revenueTotals=revenue.map(r=>r.total);
+    const revenueTotals=revenue.map(r=> Number(r.total || 0));
 
     new Chart(document.getElementById('revenueChart'),{
         type: 'bar',
         data: {
-            labels: revenueLabels,
+            labels: revenue.map(r =>
+                new Date(r.day).toLocaleDateString()
+            ),
             datasets:[{
                 label:'Revenue',
                 data:revenueTotals,
