@@ -24,7 +24,7 @@
             <th align="left"></th>
         </tr>
         {%for o in recent_orders%}
-        <tr>
+        <tr class="column-line">
             <td>{{o.id}}</td>
             <td>{{o.first_name}} {{o.last_name}}</td>
             <td>{{o.total}}</td>
@@ -43,12 +43,9 @@
 
 </section>
 
-<!-- {{orders_json|json_script:"orders-data"}}
-{{revenue_json|json_script:"revenue-data"}}
-{{status_json|json_script:"status-data"}} -->
-{{orders_json|json_script:"orders-data"}}
-{{revenue_json|json_script:"revenue-data"}}
-{{status_json|json_script:"status-data"}}
+{{orders_data|json_script:"orders-data"}}
+{{revenue_data|json_script:"revenue-data"}}
+{{status_data|json_script:"status-data"}}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -56,25 +53,40 @@
     const revenue= JSON.parse(document.getElementById('revenue-data').textContent);
     const statusData= JSON.parse(document.getElementById('status-data').textContent);
     
+    console.log("ORDERS:", orders);
+    console.log("REVENUE:", revenue);
+    console.log("STATUS:", statusData);
+
+    const orderLabels=orders.map(o=>
+        new Date(o.day).toLocaleDateString()
+    );
+    const orderCounts=orders.map(o=>o.count);
+
     new Chart(document.getElementById('ordersChart'),{
         type: 'line',
         data: {
-            labels: orders.map(o=>o.day),
+            labels: orderLabels,
             datasets:[{
                 label:'Orders',
-                data:orders.map(o=>o.count),
-                borderWidth:2
+                data:orderCounts,
+                borderWidth:2,
+                tension:0.3
             }]
         }
     });
+    
+    const revenueLabels=revenue.map(o=>
+        new Date(r.day).toLocaleDateString()
+    );
+    const revenueTotals=revenue.map(r=>r.total);
 
     new Chart(document.getElementById('revenueChart'),{
         type: 'bar',
         data: {
-            labels: revenue.map(r=>r.day),
+            labels: revenueLabels,
             datasets:[{
                 label:'Revenue',
-                data:revenue.map(r=>r.total),
+                data:revenueTotals,
             }]
         }
     });
@@ -89,4 +101,9 @@
         }
     });
 </script>
+<style>
+    .column-line:nth-of-type(2n){
+        background-color: #1f2127;
+    }
+</style>
 {%endblock%}

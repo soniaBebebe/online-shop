@@ -260,7 +260,7 @@ def manage_dashboard(request):
 
     orders=(
         Order.objects
-        .filter(created__date__gte=week_ago)
+        #(created__date__gte=week_ago)
         .annotate(day=TruncDate("created"))
         .values('day')
         .annotate(count=Count('id'))
@@ -269,7 +269,8 @@ def manage_dashboard(request):
     )
     revenue=(
         Order.objects
-        .filter(paid=True, created__date__gte=week_ago)
+        .filter(paid=True) 
+        #(created__date__gte=week_ago)
         .annotate(day=TruncDate("created"))
         .values('day')
         .annotate(
@@ -288,7 +289,8 @@ def manage_dashboard(request):
     )
     total_orders=Order.objects.count()
     paid_orders=Order.objects.filter(paid=True).count()
-    week_orders=Order.objects.filter(created__date__gte=week_ago).count()
+    week_orders=Order.objects.all().count()
+    # (created__date__gte=week_ago).count()
     revenue_total=revenue.aggregate(s=Sum("total"))["s"] or 0
     recent_orders=Order.objects.order_by("-created")[:10]
     context = {
