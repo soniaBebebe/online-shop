@@ -76,7 +76,7 @@
     });
     
     const revenueLabels=revenue.map(o=>
-        new Date(r.day).toLocaleDateString()
+        new Date(o.day).toLocaleDateString()
     );
     const revenueTotals=revenue.map(r=> Number(r.total || 0));
 
