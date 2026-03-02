@@ -35,6 +35,9 @@
         <tr><td colspan="5" class="muted">No orders yet</td></tr>
         {%endfor%}
     </table>
+
+    <a class="btn btn--primary" href="{%url 'shop:export_dashboard'%}">Export CSV</a>
+
     <h2>Dashboard</h2>
 
     <canvas id="ordersChart" height="120"></canvas>

@@ -39,6 +39,8 @@ urlpatterns=[
     path('manage/orders/bulk-status/', views.manage_orders_bulk_status, name="manage_orders_bulk_status"),
 
     path('manage/dashboard/', views.manage_dashboard, name='manage_dashboard'),
+
+    path('manage/dashboard/export/', views.export_dashboard_csv, name='export_dashboard'),
 ]
 
 if settings.DEBUG:

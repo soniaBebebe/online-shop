@@ -18,6 +18,8 @@ from django.core.paginator import Paginator
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models.functions import TruncDate
+import csv
+from django.http import HttpResponse
 
 # Create your views here.
 
@@ -308,3 +310,35 @@ def manage_dashboard(request):
     
 }
     return render(request, 'shop/manage/dashboard.html', context)
+
+@login_required
+@permission_required('shop.view_order', raise_exception=True)
+def export_dashboard_csv(requeest):
+    response=HttpResponse(content_type='text/csv')
+    response['Content-Dispositon']='attachment; filename="dashboard_export.csv"'
+    writer=csv.writer(response)
+    writer.writerow(['Date', 'Orders', 'Revenue'])
+
+    from django.db.models.functions import TruncDate
+
+    data=(
+        Order.objects
+        .annotate(day=TruncDate("created"))
+        .values('day')
+
+        .annotate(
+            orders_count=Count('id'),
+            revenue_total=Sum(
+                F("items__price")*F("items__quantity"),
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            )
+        )
+        .order_by('day')
+    )
+    for row in data:
+        writer.writerow([
+            row['day'],
+            row['orders_count'],
+            row['revenue_total']or 0
+        ])
+    return response
