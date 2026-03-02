@@ -20,6 +20,12 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models.functions import TruncDate
 import csv
 from django.http import HttpResponse
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import pagesizes
+from reportlab.lib.units import inch
+from io import BytesIO
 
 # Create your views here.
 
@@ -342,3 +348,57 @@ def export_dashboard_csv(requeest):
             row['revenue_total']or 0
         ])
     return response
+
+@login_required
+@permission_required('shop.view_order', raise_exception=True)
+def export_dashboard_pdf(request):
+    buffer=BytesIO()
+    doc=SimpleDocTemplate(buffer,pagesize=pagesizes.A4)
+    elements=[]
+
+    styles=getSampleStyleSheet()
+    elements.append(Paragraph("<b>Store Dashboard Report</b>", styles['Title']))
+    elements.append(Spacer(1, 0.3*inch))
+    today=timezone.now().date()
+    week_ago=today-timedelta(days=6)
+
+    total_orders=Order.objects.count()
+    paid_orders=Order.objects.filter(paid=True).count()
+    revenue_total=(
+        Order.objects
+        .filter(paid=True)
+        .aggregate(
+            total=Sum(
+                F("items__price")*F("items__quantity"),
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            )
+        )["total"] or 0
+    )
+
+    elements.append(Paragraph(f"Total Orders: {total_orders}", styles['Normal']))
+    elements.append(Paragraph(f"Paid Orders: {paid_orders}", styles['Normal']))
+    elements.append(Paragraph(f"Total Revenue: ${revenue_total}", styles['Normal']))
+    elements.append(Spacer(1, 0.4*inch))
+
+    data=(
+        Order.objects
+        .annotate(day=TruncDate("created"))
+        .values('day')
+        .annotate(
+            orders_count=Count('id'),
+            revenue_total=Sum(
+                F("items__price")*F("items__quantity"),
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            )
+        )
+        .order_by('day')
+    )
+
+    table_data=[["date", "Orders", "Revenue"]]
+
+    for row in data:
+        table_data.append([
+            str(row['day']),
+            row['orders_count'],
+            row['revenue_total'] or 0
+        ])
