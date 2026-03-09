@@ -20,7 +20,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models.functions import TruncDate
 import csv
 from django.http import HttpResponse
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import pagesizes
@@ -402,3 +402,14 @@ def export_dashboard_pdf(request):
             row['orders_count'],
             row['revenue_total'] or 0
         ])
+    table = Table(table_data, colWidths=[2*inch, 1.5*inch, 1.5*inch])
+
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
+        ('ALIGN', (1,1), (-1,-1), 'CENTER'),
+    ]))
+    elements.append(table)
+    doc.build(elements)
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename="dashboard_report.pdf")

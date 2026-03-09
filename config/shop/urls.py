@@ -41,6 +41,7 @@ urlpatterns=[
     path('manage/dashboard/', views.manage_dashboard, name='manage_dashboard'),
 
     path('manage/dashboard/export/', views.export_dashboard_csv, name='export_dashboard'),
+    path('manage/dashboard/export/pdf/', views.export_dashboard_pdf, name='export_dashboard_pdf'),
 ]
 
 if settings.DEBUG:
