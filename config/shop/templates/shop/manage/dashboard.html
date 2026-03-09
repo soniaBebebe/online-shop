@@ -37,7 +37,8 @@
     </table>
 
     <a class="btn btn--primary" href="{%url 'shop:export_dashboard'%}">Export CSV</a>
-    <a class="btn btn--primary" href="{%url 'shop:export_dashboard_pdf'%}">Export PDF</a>
+    <!-- <a class="btn btn--primary" href="{%url 'shop:export_dashboard_pdf'%}">Export PDF</a> -->
+    <button class="btn" onclick="exportPDF()">Export PDF</button>
 
     <h2>Dashboard</h2>
 
@@ -106,6 +107,33 @@
             }]
         }
     });
+
+    function exportPDF(){
+        const ordersChart=document.getElementById('ordersChart').toDataURL("image/png");
+        const revenueChart=document.getElementById('revenueChart').toDataURL("image/png");
+        const statusChart=document.getElementById('statusChart').toDataURL("image/png");
+
+        fetch("/manage/dashboard/export/pdf/", {
+            method: "POST",
+            headers:{
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{csrf_token}}"
+            },
+            body: JSON.stringify({
+                orders_chart: ordersChart,
+                revenue_chart: revenueChart,
+                status_chart: statusChart
+            })
+        })
+        .then(response => response.blob())
+        .then(blob=>{
+            const url=window.URL.createObjectURL(blob);
+            const a=document.createElement("a");
+            a.href=url;
+            a.download="dashboard_report.pdf";
+            a.click();
+        });
+    }
 </script>
 <style>
     .column-line:nth-of-type(2n){

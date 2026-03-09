@@ -20,12 +20,14 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models.functions import TruncDate
 import csv
 from django.http import HttpResponse
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import pagesizes
 from reportlab.lib.units import inch
 from io import BytesIO
+import base64
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -352,6 +354,11 @@ def export_dashboard_csv(requeest):
 @login_required
 @permission_required('shop.view_order', raise_exception=True)
 def export_dashboard_pdf(request):
+    data=json.loads(request.body)
+    orders_chart=data.get("orders_chart")
+    revenue_chart=data.get("revenue_chart")
+    status_chart=data.get("status_chart")
+
     buffer=BytesIO()
     doc=SimpleDocTemplate(buffer,pagesize=pagesizes.A4)
     elements=[]
@@ -359,57 +366,78 @@ def export_dashboard_pdf(request):
     styles=getSampleStyleSheet()
     elements.append(Paragraph("<b>Store Dashboard Report</b>", styles['Title']))
     elements.append(Spacer(1, 0.3*inch))
-    today=timezone.now().date()
-    week_ago=today-timedelta(days=6)
 
-    total_orders=Order.objects.count()
-    paid_orders=Order.objects.filter(paid=True).count()
-    revenue_total=(
-        Order.objects
-        .filter(paid=True)
-        .aggregate(
-            total=Sum(
-                F("items__price")*F("items__quantity"),
-                output_field=DecimalField(max_digits=12, decimal_places=2),
-            )
-        )["total"] or 0
-    )
+    def decode_image(base64_string):
+        header, encoded=base64_string.split(",",1)
+        img_bytes=base64.b64decode(encoded)
+        img_buffer=BytesIO(img_bytes)
+        return img_buffer
 
-    elements.append(Paragraph(f"Total Orders: {total_orders}", styles['Normal']))
-    elements.append(Paragraph(f"Paid Orders: {paid_orders}", styles['Normal']))
-    elements.append(Paragraph(f"Total Revenue: ${revenue_total}", styles['Normal']))
-    elements.append(Spacer(1, 0.4*inch))
+    elements.append(Paragraph("Orders Chart", styles['Heading2']))
+    elements.append(Image(decode_image(orders_chart), width=400, height=200))
+    elements.append(Spacer(1,20))
 
-    data=(
-        Order.objects
-        .annotate(day=TruncDate("created"))
-        .values('day')
-        .annotate(
-            orders_count=Count('id'),
-            revenue_total=Sum(
-                F("items__price")*F("items__quantity"),
-                output_field=DecimalField(max_digits=12, decimal_places=2),
-            )
-        )
-        .order_by('day')
-    )
+    elements.append(Paragraph("Revenue Chart", styles['Heading2']))
+    elements.append(Image(decode_image(revenue_chart), width=400, height=200))
+    elements.append(Spacer(1,20))
+    
+    elements.append(Paragraph("Orders Status", styles['Heading2']))
+    elements.append(Image(decode_image(status_chart), width=300, height=300))
 
-    table_data=[["date", "Orders", "Revenue"]]
-
-    for row in data:
-        table_data.append([
-            str(row['day']),
-            row['orders_count'],
-            row['revenue_total'] or 0
-        ])
-    table = Table(table_data, colWidths=[2*inch, 1.5*inch, 1.5*inch])
-
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-        ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
-        ('ALIGN', (1,1), (-1,-1), 'CENTER'),
-    ]))
-    elements.append(table)
     doc.build(elements)
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=True, filename="dashboard_report.pdf")
+    # today=timezone.now().date()
+    # week_ago=today-timedelta(days=6)
+
+    # total_orders=Order.objects.count()
+    # paid_orders=Order.objects.filter(paid=True).count()
+    # revenue_total=(
+    #     Order.objects
+    #     .filter(paid=True)
+    #     .aggregate(
+    #         total=Sum(
+    #             F("items__price")*F("items__quantity"),
+    #             output_field=DecimalField(max_digits=12, decimal_places=2),
+    #         )
+    #     )["total"] or 0
+    # )
+
+    # elements.append(Paragraph(f"Total Orders: {total_orders}", styles['Normal']))
+    # elements.append(Paragraph(f"Paid Orders: {paid_orders}", styles['Normal']))
+    # elements.append(Paragraph(f"Total Revenue: ${revenue_total}", styles['Normal']))
+    # elements.append(Spacer(1, 0.4*inch))
+
+    # data=(
+    #     Order.objects
+    #     .annotate(day=TruncDate("created"))
+    #     .values('day')
+    #     .annotate(
+    #         orders_count=Count('id'),
+    #         revenue_total=Sum(
+    #             F("items__price")*F("items__quantity"),
+    #             output_field=DecimalField(max_digits=12, decimal_places=2),
+    #         )
+    #     )
+    #     .order_by('day')
+    # )
+
+    # table_data=[["date", "Orders", "Revenue"]]
+
+    # for row in data:
+    #     table_data.append([
+    #         str(row['day']),
+    #         row['orders_count'],
+    #         row['revenue_total'] or 0
+    #     ])
+    # table = Table(table_data, colWidths=[2*inch, 1.5*inch, 1.5*inch])
+
+    # table.setStyle(TableStyle([
+    #     ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+    #     ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
+    #     ('ALIGN', (1,1), (-1,-1), 'CENTER'),
+    # ]))
+    # elements.append(table)
+    # doc.build(elements)
+    # buffer.seek(0)
+    # return FileResponse(buffer, as_attachment=True, filename="dashboard_report.pdf")
