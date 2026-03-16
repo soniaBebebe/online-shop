@@ -267,6 +267,34 @@ def manage_orders_bulk_status(request):
 def manage_dashboard(request):
     today=timezone.now().date()
     week_ago = today-timedelta(days=6)
+    prev_week_start=today-timedelta(days=13)
+    prev_week_end=today-timedelta(days=7)
+    week_revenue=(
+        Order.objects
+        .filter(paid=True, created__date__gte=week_ago)
+        .aggregate(
+            total=Sum(
+                F("items__price")*F("items__quantity"),
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            )
+        )["total"] or 0
+    )
+    prev_week_revenue=(
+        Order.objects
+        .filter(paid=True, created__date__gte=prev_week_start, created__date__gte=prev_week_end)
+        .aggregate(
+            total=Sum(
+                F("items__price")*F("items__quantity"),
+                output_field=DecimalField(max_digits=12, decimal_places=2),
+            )
+        )["total"] or 0
+    )
+
+    revenue_change=0
+    if prev_week_revenue>0:
+        revenue_change=round(
+            ((week_revenue - prev_week_revenue)/prev_week_revenue)*100, 1
+        )
 
     orders=(
         Order.objects
@@ -315,6 +343,8 @@ def manage_dashboard(request):
     "week_orders": week_orders,
     "revenue_total": revenue_total,
     "recent_orders": recent_orders,
+    "week_revenue":week_revenue,
+    "revenue_change":revenue_change,
     
 }
     return render(request, 'shop/manage/dashboard.html', context)

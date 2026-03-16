@@ -44,20 +44,39 @@
 
     <div class="kpi-grid">
         <div class="kpi-card">
-            <div class="kpi-title">Total Orders</div>
+            <div class="kpi-title">🌎 Total Orders</div>
             <div class="kpi-value">{{total_orders}}</div>
         </div>
         <div class="kpi-card">
-            <div class="kpi-title">Paid Orders</div>
+            <div class="kpi-title">🤑 Paid Orders</div>
             <div class="kpi-value">{{paid_orders}}</div>
         </div>
         <div class="kpi-card">
-            <div class="kpi-title">Orders (7 days)</div>
+            <div class="kpi-title">📮 Orders (7 days)</div>
             <div class="kpi-value">{{week_orders}}</div>
         </div>
         <div class="kpi-card">
-            <div class="kpi-title">Revenue</div>
+            <div class="kpi-title">💸 Revenue</div>
             <div class="kpi-value">${{revenue_total}}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">💰 Revenue</div>
+            <div class="kpi-value">${{week_revenue}}</div>
+            <div class="kpi-change
+                {%if revenue_change>0%}
+                positive
+                {%elif revenue_change<0%}
+                negative
+                {%endif%}
+            ">
+            {%if revenue_change>0%}
+            🟢 + {{revenue_change}}%
+            {%elif revenue_change<0%}
+            🔴 {{revenue_change}}%
+            {%else%}
+            0%
+            {%endif%}
+            vs last week
         </div>
     </div>
 

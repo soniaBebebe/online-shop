@@ -87,3 +87,13 @@ body{
     font-weight: bold;
     margin-top: 5px;
 }
+.kpi-change{
+    margin-top:6px;
+    font-size:14px;
+}
+.kpi-change.positive{
+    color:#2ecc71;
+}
+.kpi-change.negative{
+    color:#e74c3c;
+}
