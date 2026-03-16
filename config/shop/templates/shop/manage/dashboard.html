@@ -42,6 +42,25 @@
 
     <h2>Dashboard</h2>
 
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-title">Total Orders</div>
+            <div class="kpi-value">{{total_orders}}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">Paid Orders</div>
+            <div class="kpi-value">{{paid_orders}}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">Orders (7 days)</div>
+            <div class="kpi-value">{{week_orders}}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title">Revenue</div>
+            <div class="kpi-value">${{revenue_total}}</div>
+        </div>
+    </div>
+
     <canvas id="ordersChart" height="120"></canvas>
     <canvas id="revenueChart" height="120" style="margin-top:30px;"></canvas>
     <canvas id="statusChart" height="120" style="margin-top:30px;"></canvas>

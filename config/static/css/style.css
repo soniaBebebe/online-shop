@@ -66,3 +66,24 @@ body{
     color: var(--text);
     text-decoration: none;
 }
+.kpi-grid{
+    display:grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 16px;
+    margin-top:20px;
+}
+.kpi-card{
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+.kpi-title{
+    font-size:14px;
+    color:#888;
+}
+.kpi-value{
+    font-size:28px;
+    font-weight: bold;
+    margin-top: 5px;
+}
