@@ -281,7 +281,7 @@ def manage_dashboard(request):
     )
     prev_week_revenue=(
         Order.objects
-        .filter(paid=True, created__date__gte=prev_week_start, created__date__gte=prev_week_end)
+        .filter(paid=True, created__date__gte=prev_week_start, created__date__lte=prev_week_end)
         .aggregate(
             total=Sum(
                 F("items__price")*F("items__quantity"),
