@@ -251,7 +251,7 @@ def manage_dashboard(request):
     week_revenue=(
         Order.objects
         .filter(paid=True, created__date__gte=week_ago)
-        .aggregate(
+        .annotate(
             item_total=ExpressionWrapper(
                 F("items__price")*F("items__quantity"),
                 output_field=DecimalField(max_digits=12, decimal_places=2),
@@ -261,7 +261,7 @@ def manage_dashboard(request):
     prev_week_revenue=(
         Order.objects
         .filter(paid=True, created__date__gte=prev_week_start, created__date__lte=prev_week_end)
-        .aggregate(
+        .annotate(
             item_total=ExpressionWrapper(
                 F("items__price")*F("items__quantity"),
                 output_field=DecimalField(max_digits=12, decimal_places=2),
@@ -294,7 +294,6 @@ def manage_dashboard(request):
                 output_field=DecimalField(max_digits=12, decimal_places=2),
             )
         )
-        .values("day")
         .annotate(total=Sum("item_total"))
         .order_by('day')
     )
@@ -306,11 +305,11 @@ def manage_dashboard(request):
     )
     total_orders=Order.objects.count()
     paid_orders=Order.objects.filter(paid=True).count()
-    week_orders=Order.objects.all().count()
+    week_orders=Order.objects.filter(created__date__gte=week_ago).count()
     revenue_total=(
         Order.objects
         .filter(paid=True)
-        .anntate(
+        .annotate(
             item_total=ExpressionWrapper(
                 F("items__price")*F("items__quantity"),
                 output_field=DecimalField(max_digits=12, decimal_places=2)

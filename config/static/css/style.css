@@ -80,12 +80,13 @@ body{
 }
 .kpi-title{
     font-size:14px;
-    color:#888;
+    color:#808080;
 }
 .kpi-value{
     font-size:28px;
     font-weight: bold;
     margin-top: 5px;
+    color: rgb(0, 0, 0);
 }
 .kpi-change{
     margin-top:6px;
