@@ -66,7 +66,7 @@ def cart_update(request, product_id):
     cart=Cart(request)
     product=get_object_or_404(Product, id=product_id, is_active=True)
     qty=max(0, int(request.POST.get('quantity',1)))
-    cart.add(product,quantity=qty, update_quantity=True) #0-deletes
+    cart.add(product,quantity=qty, update_quantity=True) 
     return redirect('shop:cart_detail')
 
 @login_required
@@ -161,27 +161,6 @@ def signup(request):
     else:
         form=UserCreationForm()
     return render(request, "shop/auth/signup.html", {"form": form})
-
-# @login_required
-# @permission_required('shop.view_order', raise_exception=True)
-# def manage_dashboard(request):
-#     from .models import Order
-#     today=timezone.now().date()
-#     week_ago=today-timedelta(days=7)
-#     total_orders=Order.objects.count()
-#     paid_orders=Order.objects.filter(paid=True).count()
-#     week_orders=Order.objects.filter(created__date__gte=week_ago).count()
-
-#     revenue=Order.objects.filter (paid=True).aggregate(s=Sum('total'))['s'] or 0
-#     recent_orders=Order.objects.order_by('-created')[:10]
-
-#     return render(request, 'shop/manage/dasboard.html',{
-#         'total_orders':total_orders,
-#         'paid_orders':paid_orders,
-#         'week_orders':week_orders,
-#         'revenue': revenue,
-#         'recent_orders': recent_orders,
-#     })
 
 @login_required
 @permission_required('shop.view_order', raise_exception=True)
@@ -298,7 +277,6 @@ def manage_dashboard(request):
 
     orders=(
         Order.objects
-        #(created__date__gte=week_ago)
         .annotate(day=TruncDate("created"))
         .values('day')
         .annotate(count=Count('id'))
@@ -307,8 +285,7 @@ def manage_dashboard(request):
     )
     revenue=(
         Order.objects
-        # .filter(paid=True) 
-        #(created__date__gte=week_ago)
+        
         .annotate(day=TruncDate("created"))
         .values('day')
         .annotate(
@@ -317,6 +294,8 @@ def manage_dashboard(request):
                 output_field=DecimalField(max_digits=12, decimal_places=2),
             )
         )
+        .values("day")
+        .annotate(total=Sum("item_total"))
         .order_by('day')
     )
     status_data=(
@@ -328,13 +307,20 @@ def manage_dashboard(request):
     total_orders=Order.objects.count()
     paid_orders=Order.objects.filter(paid=True).count()
     week_orders=Order.objects.all().count()
-    # (created__date__gte=week_ago).count()
-    revenue_total=revenue.aggregate(s=Sum("total"))["s"] or 0
+    revenue_total=(
+        Order.objects
+        .filter(paid=True)
+        .anntate(
+            item_total=ExpressionWrapper(
+                F("items__price")*F("items__quantity"),
+                output_field=DecimalField(max_digits=12, decimal_places=2)
+            )
+        )
+        .aggregate(total=Sum("item_total"))["total"] or 0
+    )
     recent_orders=Order.objects.order_by("-created")[:10]
     context = {
-    # "orders_json": json.dumps(list(orders), cls=DjangoJSONEncoder),
-    # "revenue_json": json.dumps(list(revenue), cls=DjangoJSONEncoder),
-    # "status_json": json.dumps(list(status_data), cls=DjangoJSONEncoder),
+    
     "orders_data": list(orders),
     "revenue_data": list(revenue),
     "status_data": list(status_data),
@@ -417,57 +403,4 @@ def export_dashboard_pdf(request):
     doc.build(elements)
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=True, filename="dashboard_report.pdf")
-    # today=timezone.now().date()
-    # week_ago=today-timedelta(days=6)
-
-    # total_orders=Order.objects.count()
-    # paid_orders=Order.objects.filter(paid=True).count()
-    # revenue_total=(
-    #     Order.objects
-    #     .filter(paid=True)
-    #     .aggregate(
-    #         total=Sum(
-    #             F("items__price")*F("items__quantity"),
-    #             output_field=DecimalField(max_digits=12, decimal_places=2),
-    #         )
-    #     )["total"] or 0
-    # )
-
-    # elements.append(Paragraph(f"Total Orders: {total_orders}", styles['Normal']))
-    # elements.append(Paragraph(f"Paid Orders: {paid_orders}", styles['Normal']))
-    # elements.append(Paragraph(f"Total Revenue: ${revenue_total}", styles['Normal']))
-    # elements.append(Spacer(1, 0.4*inch))
-
-    # data=(
-    #     Order.objects
-    #     .annotate(day=TruncDate("created"))
-    #     .values('day')
-    #     .annotate(
-    #         orders_count=Count('id'),
-    #         revenue_total=Sum(
-    #             F("items__price")*F("items__quantity"),
-    #             output_field=DecimalField(max_digits=12, decimal_places=2),
-    #         )
-    #     )
-    #     .order_by('day')
-    # )
-
-    # table_data=[["date", "Orders", "Revenue"]]
-
-    # for row in data:
-    #     table_data.append([
-    #         str(row['day']),
-    #         row['orders_count'],
-    #         row['revenue_total'] or 0
-    #     ])
-    # table = Table(table_data, colWidths=[2*inch, 1.5*inch, 1.5*inch])
-
-    # table.setStyle(TableStyle([
-    #     ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-    #     ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
-    #     ('ALIGN', (1,1), (-1,-1), 'CENTER'),
-    # ]))
-    # elements.append(table)
-    # doc.build(elements)
-    # buffer.seek(0)
-    # return FileResponse(buffer, as_attachment=True, filename="dashboard_report.pdf")
+    
