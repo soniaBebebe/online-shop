@@ -63,15 +63,15 @@
             <div class="kpi-title">💰 Revenue</div>
             <div class="kpi-value">${{week_revenue}}</div>
             <div class="kpi-change
-                {%if revenue_change>0%}
+                {%if revenue_change > 0%}
                 positive
-                {%elif revenue_change<0%}
+                {%elif revenue_change < 0%}
                 negative
                 {%endif%}
             ">
-            {%if revenue_change>0%}
+            {%if revenue_change > 0%}
             🟢 + {{revenue_change}}%
-            {%elif revenue_change<0%}
+            {%elif revenue_change < 0%}
             🔴 {{revenue_change}}%
             {%else%}
             0%
