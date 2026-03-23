@@ -10,7 +10,7 @@ from .pdf import generate_order_pdf
 from django.http import FileResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
-from django.db.models import Sum, Count, F, DecimalField
+from django.db.models import Sum, Count, F, DecimalField, ExpressionWrapper
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q
@@ -273,21 +273,21 @@ def manage_dashboard(request):
         Order.objects
         .filter(paid=True, created__date__gte=week_ago)
         .aggregate(
-            total=Sum(
+            item_total=ExpressionWrapper(
                 F("items__price")*F("items__quantity"),
                 output_field=DecimalField(max_digits=12, decimal_places=2),
             )
-        )["total"] or 0
+        ).aggregate(total=Sum("item_total"))["total"] or 0
     )
     prev_week_revenue=(
         Order.objects
         .filter(paid=True, created__date__gte=prev_week_start, created__date__lte=prev_week_end)
         .aggregate(
-            total=Sum(
+            item_total=ExpressionWrapper(
                 F("items__price")*F("items__quantity"),
                 output_field=DecimalField(max_digits=12, decimal_places=2),
             )
-        )["total"] or 0
+        ).aggregate(total=Sum("item_total"))["total"] or 0
     )
 
     revenue_change=0
@@ -312,7 +312,7 @@ def manage_dashboard(request):
         .annotate(day=TruncDate("created"))
         .values('day')
         .annotate(
-            total=Sum(
+            item_total=ExpressionWrapper(
                 F("items__price") * F("items__quantity"),
                 output_field=DecimalField(max_digits=12, decimal_places=2),
             )
