@@ -112,7 +112,7 @@ def checkout(request):
             order=form.save(commit=False)
             if request.user.is_authenticated:
                 order.user=request.user
-            order.paid=False
+            order.paid=True
             order.save()
 
 
