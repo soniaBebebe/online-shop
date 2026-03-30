@@ -286,14 +286,15 @@ def manage_dashboard(request):
     revenue=(
         Order.objects
         
-        .annotate(day=TruncDate("created"))
-        .values('day')
+        .filter(paid=True)
         .annotate(
+            day=TruncDate("created"),
             item_total=ExpressionWrapper(
                 F("items__price") * F("items__quantity"),
                 output_field=DecimalField(max_digits=12, decimal_places=2),
             )
         )
+        .values("day")
         .annotate(total=Sum("item_total"))
         .order_by('day')
     )
